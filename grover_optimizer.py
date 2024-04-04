@@ -208,8 +208,8 @@ class GroverOptimizer(OptimizationAlgorithm):
                 k = int(outcome[0:n_key], 2)
                 v = outcome[n_key : n_key + n_value]
                 int_v = self._bin_to_int(v, n_value) + threshold
-                logger.info("Outcome: %s", outcome)
-                logger.info("Value Q(x): %s", int_v)
+                #logger.info("Outcome: %s", outcome)
+                #logger.info("Value Q(x): %s", int_v)
                 # If the value is an improvement, we update the iteration parameters (e.g. oracle).
                 if int_v < optimum_value:
                     optimum_key = k
@@ -236,7 +236,7 @@ class GroverOptimizer(OptimizationAlgorithm):
                 else:
                     # Using Durr and Hoyer method, increase m.
                     m = int(np.ceil(min(m * 8 / 7, 2 ** (n_key / 2))))
-                    logger.info("No Improvement. M: %s", m)
+                    #logger.info("No Improvement. M: %s", m)
 
                     # Check if we've already seen this value.
                     if k not in keys_measured:
@@ -255,7 +255,7 @@ class GroverOptimizer(OptimizationAlgorithm):
                 operations = circuit.count_ops()
                 operation_count[iteration] = operations
                 iteration += 1
-                logger.info("Operation Count: %s\n", operations)
+                #logger.info("Operation Count: %s\n", operations)
 
         # If the constant is 0 and we didn't find a negative, the answer is likely 0.
         if optimum_value >= 0 and orig_constant == 0:
@@ -286,7 +286,7 @@ class GroverOptimizer(OptimizationAlgorithm):
     def _measure(self, circuit: QuantumCircuit) -> str:
         """Get probabilities from the given backend, and picks a random outcome."""
         probs = self._get_prob_dist(circuit)
-        logger.info("Frequencies: %s", probs)
+        #logger.info("Frequencies: %s", probs)
         # Pick a random outcome.
         return algorithm_globals.random.choice(list(probs.keys()), 1, p=list(probs.values()))[0]
 
@@ -294,6 +294,7 @@ class GroverOptimizer(OptimizationAlgorithm):
         """Gets probabilities from a given backend."""
         # Execute job and filter results.
         job = self._sampler.run([qc])
+        
 
         try:
             result = job.result()
@@ -306,6 +307,7 @@ class GroverOptimizer(OptimizationAlgorithm):
             if v >= self._MIN_PROBABILITY
         }
         prob_dist = {k[::-1]: v for k, v in raw_prob_dist.items()}
+        logger.info("Probabilities: %s", prob_dist)
         self._circuit_results = {i: v**0.5 for i, v in raw_prob_dist.items()}
         return prob_dist
 
